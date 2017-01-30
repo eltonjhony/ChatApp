@@ -12,13 +12,15 @@ import {
   Actions
 } from 'react-native-router-flux'
 
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+
+import * as homeActions from '../actions/home'
+
 class Home extends React.Component {
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      name: ''
-    }
+  handleName(text) {
+    this.props.actions.handleName(text);
   }
 
   render() {
@@ -30,18 +32,12 @@ class Home extends React.Component {
         <TextInput
           style={styles.nameInput}
           placeholder='John Snow'
-          onChangeText={(text) => {
-            this.setState({
-              name: text,
-            })
-          }}
-          value={this.state.name}
+          onChangeText={(text) => { this.handleName(text) }}
+          value={this.props.name}
         />
         <TouchableOpacity style={styles.buttonNext}
           onPress={() => {
-            Actions.chat({
-              name: this.state.name
-            })
+            Actions.chat({name: this.props.name})
           }}>
           <Text>Next</Text>
         </TouchableOpacity>
@@ -66,4 +62,10 @@ const styles = StyleSheet.create({
   }
 })
 
-export default Home;
+export default connect(state => ({
+    name: state.name,
+  }),
+  (dispatch) => ({
+    actions: bindActionCreators(homeActions, dispatch)
+  })
+)(Home);
